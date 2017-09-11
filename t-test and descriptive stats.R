@@ -76,13 +76,50 @@ abline(v=mean(control_pop))
 for(sample in 1:100)
   conf_plot(sample)
 
-# ... Conduct the actual hypothesis test
+# Make sure the data is normally distributed by checking one sample
+# using qqplot and histogram
+par(mfrow=c(2, 2))
+hist(control_sample[, 1], main="Distribution of control sample",
+xlab = "Weight (grams)")
+qqnorm(control_sample[, 1], main="QQ plot of control sample")
+qqline(treatment_sample[, 1], main="Distribution of treatment sample",
+xlab = "Weight (grams)")
+qqnorm(treatment_sample[, 1], main="QQ plot of treatment sample")
+qqline(treatment_sample[, 1])
 
+# The QQ plot show that the samples are reasonably normally distributed
+# Hence, conduct a t-test
+# Tobs stores the critical values on the distribution function
+tobs <- (mean(control_sample[, 1]) - mean(treatment_sample[, 1])) / sqrt(var(control_sample[, 1]) / 25 +
+	var(treatment_sample[, 1]) / 25)
+# acquire p_value from tobs
+p_value <- 1 - pt(tobs, 48)
+# Conduct t-test comparing the two sample means
+ttest_result <- t.test(control_sample[, 1], treatment_sample[, 1])
 
+# Conclusion: the p-value for one tail is 3.4% and thus 6.9% using two tails. Not significant: type II error.
+# Note: this is for a single sample.
 
+# Acquire p_values for all 100 samples and plot them as a histogram
+"" ttest_func <- function(i) {t.test(control_sample[, i], treatment_sample[, i]$p.value}
 
+all_values <- sapply(1:100, )
+par(mfrow=c(1, 1))
+hist(all_values, main="P-values from all 100 samples",
+	xlab="P-value")
+sum(all_values < 0.05) "" # Check in studio
 
+# Power calculation for sample 1
+install.packages("pwr")
+library(pwr)
+sample_size <- 25
+effect_size <- (mean(control_sample[, 1]) - mean(treatment_sample[, 1])) / sd(control_sample[, 1])
+alpha <- 0.05
+power <- pwr.t.test(sample_size, effect_size, alpha) # Power is 45%, quite low.
 
+# Calculate needed sample size for power 80%
+power <- 0.80
+sample_size <- pwr.t.test(NULL, effect_size, alpha, power)
 
 
 
